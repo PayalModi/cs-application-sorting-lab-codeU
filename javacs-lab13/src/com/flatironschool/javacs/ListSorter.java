@@ -63,8 +63,44 @@ public class ListSorter<T> {
 	 * @return
 	 */
 	public List<T> mergeSort(List<T> list, Comparator<T> comparator) {
-        // FILL THIS IN!
-        return null;
+		int size = list.size();
+        if (size == 1)
+        	return list;
+
+        List<T> left = mergeSort(new LinkedList<T>(list.subList(0, size/2)), comparator);
+        List<T> right = mergeSort(new LinkedList<T>(list.subList(size/2, size)), comparator);
+
+        return merge(left, right, comparator);
+	}
+
+	public List<T> merge(List<T> left, List<T> right, Comparator<T> comparator) {
+		List<T> mergedList = new LinkedList<T>();
+
+		while (left.size() > 0 && right.size() > 0) {
+			T leftVal = left.get(0);
+			T rightVal = right.get(0);
+			int result = comparator.compare(leftVal, rightVal);
+
+			if (result < 0) {
+				mergedList.add(leftVal);
+				left.remove(0);
+			}
+			else {
+				mergedList.add(rightVal);
+				right.remove(0);
+			}
+		}
+
+		while (right.size() > 0) {
+			mergedList.add(right.get(0));
+			right.remove(0);
+		}
+		while (left.size() > 0) {
+			mergedList.add(left.get(0));
+			left.remove(0);
+		}
+
+		return mergedList;
 	}
 
 	/**
@@ -75,7 +111,15 @@ public class ListSorter<T> {
 	 * @return
 	 */
 	public void heapSort(List<T> list, Comparator<T> comparator) {
-        // FILL THIS IN!
+        PriorityQueue<T> heap = new PriorityQueue<T>(list.size(), comparator);
+        while (list.size() > 0) {
+        	heap.offer(list.get(0));
+        	list.remove(0);
+        }
+        list.clear();
+        while(heap.size() > 0) {
+        	list.add(heap.poll());
+        }
 	}
 
 	
@@ -89,10 +133,22 @@ public class ListSorter<T> {
 	 * @return
 	 */
 	public List<T> topK(int k, List<T> list, Comparator<T> comparator) {
-        // FILL THIS IN!
-        return null;
+		PriorityQueue<T> heap = new PriorityQueue<T>(list.size(), comparator);
+        for (T element : list) {
+        	if (heap.size() < k) {
+        		heap.offer(element);
+        	}
+        	else if (comparator.compare(element, heap.peek()) > 0) {
+        		heap.poll();
+        		heap.offer(element);
+        	}
+        }
+        List<T> topKElements = new ArrayList<T>();
+        while (! heap.isEmpty()) {
+        	topKElements.add(heap.poll());
+        }
+        return topKElements;
 	}
-
 	
 	/**
 	 * @param args
